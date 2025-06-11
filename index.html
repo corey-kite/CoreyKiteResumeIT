@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Corey Kite - Technical Support Analyst</title>
+    <!-- Chosen Palette: Corporate Gold & Midnight Blue (Midnight Blue for accents/sections, Gold for highlights, clean white/light gray background) -->
+    <!-- Application Structure Plan: This single-page resume uses a modern two-column layout. The left column (Midnight Blue) houses the primary contact information and a concise professional summary, acting as a quick reference point. The right column (clean background) presents detailed Core Competencies and Professional Experience in a clean, scannable format. This structure prioritizes immediate understanding of key qualifications (via the left column and skill summaries) while allowing for deeper exploration of experience and achievements without cluttering the main view, offering both a snapshot and comprehensive detail. Interactive elements (modals for skills/experience) enhance user engagement and navigation. -->
+    <!-- Visualization & Content Choices: Summary -> Inform -> Formatted Text Block -> Static Display -> Direct and clear introduction. | Skills -> Organize/Inform -> Interactive Grid -> Click to reveal details & generate AI insights -> Reduces initial clutter, adds engagement, provides tailored relevance. (HTML/CSS/JS + Gemini API). | Experience -> Organize/Inform -> Chronological List -> Click to expand job details & generate AI transferable skills analysis -> Visualizes career progression logically, provides on-demand detail, highlights cross-industry relevance. (HTML/CSS/JS + Gemini API). | Education -> Inform -> Formatted Text Block -> Static Display -> Standard and clear. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -93,8 +97,10 @@
 <body class="antialiased">
 
     <div class="main-container">
+        <!-- Left Column (Contact, Summary) -->
         <aside class="left-column w-full md:w-1/3 lg:w-1/4 p-6 md:p-8 flex flex-col items-center text-center shadow-lg md:shadow-none z-10">
             <div class="mb-8 w-32 h-32 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+                <!-- Profile image updated with the provided Cloudinary URL -->
                 <img src="https://res.cloudinary.com/daafhagfc/image/upload/v1749663828/New_Project_ya3bgn.jpg" alt="Corey Kite Profile Picture" class="w-full h-full object-cover">
             </div>
 
@@ -132,20 +138,26 @@
             </div>
         </aside>
 
+        <!-- Right Column (Core Competencies, Experience) -->
         <main class="right-column flex-1 p-6 md:p-8 lg:p-12">
             <h2 class="text-3xl font-bold text-slate-800 mb-8 pb-2 gold-divider">Core Competencies & Skills</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" id="skills-grid-container">
-                </div>
+                <!-- Skill cards will be populated by JS -->
+            </div>
 
             <h2 class="text-3xl font-bold text-slate-800 mb-8 pb-2 gold-divider">Professional Experience</h2>
             <div class="relative pl-4">
+                <!-- Vertical line for experience timeline (conceptual) -->
+                <!-- This line will be visually implied by consistent left alignment and spacing of items -->
                 <div class="space-y-8" id="experience-container">
-                    </div>
+                    <!-- Experience items will be populated by JS -->
+                </div>
             </div>
         </main>
     </div>
 
-    <div id="modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
+    <!-- Modal for details (outside main-container for z-index) -->
+    <div id="modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
         <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full transform scale-95">
             <div class="flex justify-between items-start">
                 <h3 id="modal-title" class="text-2xl font-bold text-blue-800 mb-4"></h3>
@@ -156,19 +168,18 @@
     </div>
 
 <script>
-// Corrected IIFE syntax
-(function() { 
-    // FIXME: Replace with your actual Gemini API key
-    const apiKey = "YOUR_API_KEY_HERE"; 
+(function() {
+    // Placeholder for API key, Canvas will inject it at runtime if empty
+    const apiKey = "";
 
     async function callGeminiAPI(prompt) {
-        if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
-            return "API Key not configured. Please add your API key to the script.";
+        if (!apiKey) {
+             return "Sorry, the API key is not configured. This feature is currently disabled.";
         }
         let chatHistory = [];
         chatHistory.push({ role: "user", parts: [{ text: prompt }] });
         const payload = { contents: chatHistory };
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -176,7 +187,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) {
+             if (!response.ok) {
                 const errorBody = await response.json();
                 console.error('Gemini API Error:', errorBody);
                 return `API Error: ${errorBody.error.message}`;
@@ -192,7 +203,7 @@
             }
         } catch (error) {
             console.error('Error calling Gemini API:', error);
-            return 'Failed to generate insights. Please try again later.';
+            return 'Failed to generate insights. Please check the network connection or API key.';
         }
     }
 
@@ -270,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 "Marketed vacant units, screened potential tenants, and ensured regulatory compliance.",
                 "Listened to customer questions and concerns, providing answers or responses.",
                 "Provided information about products and services, took orders, calculated charges, and processed billing or payments."
-            ] 
+            ]
         },
         {
             title: "Level 1 Technician",
@@ -301,26 +312,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (skillsContainer) {
         skillsData.forEach(skill => {
             const card = document.createElement('div');
-            card.className = 'skill-card bg-white p-4 rounded-lg shadow-md cursor-pointer flex flex-col justify-between'; 
+            card.className = 'skill-card bg-white p-4 rounded-lg shadow-md cursor-pointer flex flex-col justify-between';
             card.innerHTML = `
                 <div>
                     <div class="text-3xl mb-3 text-center">${skill.icon}</div>
                     <h3 class="text-lg font-semibold text-slate-800 text-center mb-2">${skill.title}</h3>
-                    <p class="text-sm text-slate-600 text-center mt-2">Click for details...</p> 
+                    <p class="text-sm text-slate-600 text-center mt-2">Click for details...</p>
                 </div>
                 <button class="generate-insight-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-sm transition-colors duration-200 mt-4">
                     Generate Insights ✨
                 </button>
             `;
-            // Attach event listener to the card itself
+            
             card.addEventListener('click', (event) => {
                 if (event.target.closest('.generate-insight-btn')) {
                     return;
                 }
                 showModal(skill.title, `<p>${skill.details}</p>`);
             });
-            skillsContainer.appendChild(card);
-
+            
             const insightButton = card.querySelector('.generate-insight-btn');
             insightButton.addEventListener('click', async (event) => {
                 event.stopPropagation();
@@ -332,6 +342,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 insightButton.innerHTML = `Generate Insights ✨`;
                 insightButton.disabled = false;
             });
+
+            skillsContainer.appendChild(card);
         });
     } else {
         console.error("skills-grid-container not found!");
@@ -342,15 +354,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (experienceContainer) {
         experienceData.sort((a, b) => {
             const parseDate = (dateString) => {
-                if (dateString.includes('Present')) {
-                    return new Date();
-                }
-                const endDatePart = dateString.split('–')[1].trim();
-                return new Date(endDatePart);
+                const datePart = dateString.includes('Present') ? dateString.split('–')[0].trim() : dateString.split('–')[1].trim();
+                return new Date(datePart);
             };
-            const dateA = parseDate(a.dates);
-            const dateB = parseDate(b.dates);
-            return dateB - dateA;
+            return parseDate(b.dates) - parseDate(a.dates);
         });
 
         experienceData.forEach(job => {
@@ -365,7 +372,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     Transferable Skills Analysis ✨
                 </button>
             `;
-            experienceContainer.appendChild(item);
 
             const analysisButton = item.querySelector('.generate-transferable-skills-btn');
             analysisButton.addEventListener('click', async (e) => {
@@ -384,9 +390,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(event.target.closest('.generate-transferable-skills-btn')) {
                     return;
                 }
-                const detailsHtml = '<ul class="list-disc list-inside">' + job.details.map(d => `<li class="mb-2 pl-4 border-l-2 border-gray-200 text-slate-700">${d}</li>`).join('') + '</ul>';
+                const detailsHtml = '<ul class="list-disc list-inside space-y-2">' + job.details.map(d => `<li class="pl-2">${d}</li>`).join('') + '</ul>';
                 showModal(job.title, detailsHtml);
             });
+
+            experienceContainer.appendChild(item);
         });
     } else {
         console.error("experience-container not found!");
@@ -397,7 +405,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalTitle = document.getElementById('modal-title');
     const modalBody = document.getElementById('modal-body');
     const modalClose = document.getElementById('modal-close');
-    let modalVisible = false;
 
     function showModal(title, content) {
         if (!modal || !modalTitle || !modalBody) {
@@ -406,24 +413,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         modalTitle.textContent = title;
         modalBody.innerHTML = content;
-        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         setTimeout(() => {
             modal.classList.add('is-active');
-            modal.firstElementChild.style.transform = 'scale(1)';
+            modal.firstElementChild.classList.remove('scale-95');
+            modal.firstElementChild.classList.add('scale-100');
         }, 10);
-        modalVisible = true;
     }
 
     function hideModal() {
         if (!modal) return;
         modal.classList.remove('is-active');
-        modal.firstElementChild.style.transform = 'scale(0.95)';
+        modal.firstElementChild.classList.remove('scale-100');
+        modal.firstElementChild.classList.add('scale-95');
         setTimeout(() => {
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
             document.body.style.overflow = '';
         }, 300);
-        modalVisible = false;
     }
 
     modalClose.addEventListener('click', hideModal);
@@ -433,13 +440,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Also hide modal with the Escape key
     document.addEventListener('keydown', (e) => {
-        if (e.key === "Escape" && modalVisible) {
+        if (e.key === "Escape") {
             hideModal();
         }
     });
-})(); 
+});
+})();
 </script>
 </body>
 </html>
