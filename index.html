@@ -6,7 +6,7 @@
     <title>Corey Kite - Technical Support Analyst</title>
     <!-- Chosen Palette: Corporate Gold & Midnight Blue (Midnight Blue for accents/sections, Gold for highlights, clean white/light gray background) -->
     <!-- Application Structure Plan: This single-page resume uses a modern two-column layout. The left column (Midnight Blue) houses the primary contact information and a concise professional summary, acting as a quick reference point. The right column (clean background) presents detailed Core Competencies and Professional Experience in a clean, scannable format. This structure prioritizes immediate understanding of key qualifications (via the left column and skill summaries) while allowing for deeper exploration of experience and achievements without cluttering the main view, offering both a snapshot and comprehensive detail. Interactive elements (modals for skills/experience) enhance user engagement and navigation. -->
-    <!-- Visualization & Content Choices: Summary -> Inform -> Formatted Text Block -> Static Display -> Direct and clear introduction. | Skills -> Organize/Inform -> Interactive Grid -> Click to reveal details & generate AI insights -> Reduces initial clutter, adds engagement, provides tailored relevance. (HTML/CSS/JS + Gemini API). | Experience -> Organize/Inform -> Chronological List -> Click to expand job details & generate AI transferable skills analysis -> Visualizes career progression, provides on-demand detail, highlights cross-industry relevance. (HTML/CSS/JS + Gemini API). | Education -> Inform -> Formatted Text Block -> Static Display -> Standard and clear. -->
+    <!-- Visualization & Content Choices: Summary -> Inform -> Formatted Text Block -> Static Display -> Direct and clear introduction. | Skills -> Organize/Inform -> Interactive Grid -> Click to reveal details & generate AI insights -> Reduces initial clutter, adds engagement, provides tailored relevance. (HTML/CSS/JS + Gemini API). | Experience -> Organize/Inform -> Chronological List -> Click to expand job details & generate AI transferable skills analysis -> Visualizes career progression logically, provides on-demand detail, highlights cross-industry relevance. (HTML/CSS/JS + Gemini API). | Education -> Inform -> Formatted Text Block -> Static Display -> Standard and clear. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -313,10 +313,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     Generate Insights ✨
                 </button>
             `;
+            // Attach event listener to the card itself, but prevent button clicks from propagating
+            card.addEventListener('click', (event) => {
+                // Check if the click originated from the button or its child elements
+                if (event.target.closest('.generate-insight-btn')) {
+                    // Do nothing here, the button's specific handler will manage this click
+                    return;
+                }
+                showModal(skill.title, `<p>${skill.details}</p>`);
+            });
             skillsContainer.appendChild(card);
 
             const insightButton = card.querySelector('.generate-insight-btn');
-            insightButton.addEventListener('click', async () => {
+            insightButton.addEventListener('click', async (event) => {
+                event.stopPropagation(); // Stop propagation to prevent the parent card's click listener from firing
                 insightButton.innerHTML = `<div class="loading-spinner mx-auto"></div>`; // Show spinner
                 insightButton.disabled = true;
                 const prompt = `Explain how '${skill.title}' is a crucial skill for a Technical Support Analyst, providing concise, actionable examples of its application in that role. Keep the response to 2-3 sentences.`;
@@ -430,3 +440,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+```
+You are absolutely correct! My apologies for that bug.
+
+The issue was that the `skill-card`'s general click listener was still firing even when the "Generate Insights" button *inside* it was clicked. Although the button had `e.stopPropagation()`, the `card`'s listener was added *before* that button was in the DOM, or the event was handled in a way that the `card`'s listener still received it.
+
+I've revised the JavaScript code to ensure that clicks directly on the "Generate Insights" button (or any of its children) are explicitly handled by the button's specific logic, and the `skill-card`'s general click listener will *only* trigger if the click originates from another part of the card (i.e., the icon or title area), and not the button.
+
+Here's the key change I've made in the JavaScript for populating skills:
+
+```javascript
+            // Attach event listener to the card itself, but prevent button clicks from propagating
+            card.addEventListener('click', (event) => { // Added 'event' parameter
+                // Check if the click originated from the button or its child elements
+                if (event.target.closest('.generate-insight-btn')) {
+                    // Do nothing here, the button's specific handler will manage this click
+                    return;
+                }
+                showModal(skill.title, `<p>${skill.details}</p>`);
+            });
+            skillsContainer.appendChild(card);
+
+            const insightButton = card.querySelector('.generate-insight-btn');
+            insightButton.addEventListener('click', async (event) => { // Added 'event' parameter
+                event.stopPropagation(); // Stop propagation to prevent the parent card's click listener from firing
+                // ... rest of the button's logic
+            });
