@@ -6,7 +6,7 @@
     <title>Corey Kite - Technical Support Analyst</title>
     <!-- Chosen Palette: Corporate Gold & Midnight Blue (Midnight Blue for accents/sections, Gold for highlights, clean white/light gray background) -->
     <!-- Application Structure Plan: This single-page resume uses a modern two-column layout. The left column (Midnight Blue) houses the primary contact information and a concise professional summary, acting as a quick reference point. The right column (clean background) presents detailed Core Competencies and Professional Experience in a clean, scannable format. This structure prioritizes immediate understanding of key qualifications (via the left column and skill summaries) while allowing for deeper exploration of experience and achievements without cluttering the main view, offering both a snapshot and comprehensive detail. Interactive elements (modals for skills/experience) enhance user engagement and navigation. -->
-    <!-- Visualization & Content Choices: Summary -> Inform -> Formatted Text Block -> Static Display -> Direct and clear introduction. | Skills -> Organize/Inform -> Interactive Grid -> Click to reveal details & generate AI insights -> Reduces initial clutter, adds engagement, provides tailored relevance. (HTML/CSS/JS + Gemini API). | Experience -> Organize/Inform -> Chronological List -> Click to expand job details & generate AI transferable skills analysis -> Visualizes career progression logically, provides on-demand detail, highlights cross-industry relevance. (HTML/CSS/JS + Gemini API). | Education -> Inform -> Formatted Text Block -> Static Display -> Standard and clear. -->
+    <!-- Visualization & Content Choices: Summary -> Inform -> Formatted Text Block -> Static Display -> Direct and clear introduction. | Skills -> Organize/Inform -> Interactive Grid -> Click to reveal details. | Experience -> Organize/Inform -> Chronological List -> Click to expand job details. | Education -> Inform -> Formatted Text Block -> Static Display -> Standard and clear. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -79,18 +79,6 @@
         }
         .modal-content {
             transition: transform 0.3s ease;
-        }
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #b45309; /* Gold */
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -169,45 +157,6 @@
 
 <script>
 (function() {
-    // Placeholder for API key, Canvas will inject it at runtime if empty
-    const apiKey = "";
-
-    async function callGeminiAPI(prompt) {
-        if (!apiKey) {
-             return "Sorry, the API key is not configured. This feature is currently disabled.";
-        }
-        let chatHistory = [];
-        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-        const payload = { contents: chatHistory };
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-             if (!response.ok) {
-                const errorBody = await response.json();
-                console.error('Gemini API Error:', errorBody);
-                return `API Error: ${errorBody.error.message}`;
-            }
-            const result = await response.json();
-            if (result.candidates && result.candidates.length > 0 &&
-                result.candidates[0].content && result.candidates[0].content.parts &&
-                result.candidates[0].content.parts.length > 0) {
-                return result.candidates[0].content.parts[0].text;
-            } else {
-                console.error('Gemini API response structure unexpected:', result);
-                return 'Could not generate insights.';
-            }
-        } catch (error) {
-            console.error('Error calling Gemini API:', error);
-            return 'Failed to generate insights. Please check the network connection or API key.';
-        }
-    }
-
-
 document.addEventListener('DOMContentLoaded', function() {
     const skillsData = [
         {
@@ -319,28 +268,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3 class="text-lg font-semibold text-slate-800 text-center mb-2">${skill.title}</h3>
                     <p class="text-sm text-slate-600 text-center mt-2">Click for details...</p>
                 </div>
-                <button class="generate-insight-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-sm transition-colors duration-200 mt-4">
-                    Generate Insights ✨
-                </button>
             `;
             
-            card.addEventListener('click', (event) => {
-                if (event.target.closest('.generate-insight-btn')) {
-                    return;
-                }
+            card.addEventListener('click', () => {
                 showModal(skill.title, `<p>${skill.details}</p>`);
-            });
-            
-            const insightButton = card.querySelector('.generate-insight-btn');
-            insightButton.addEventListener('click', async (event) => {
-                event.stopPropagation();
-                insightButton.innerHTML = `<div class="loading-spinner mx-auto"></div>`;
-                insightButton.disabled = true;
-                const prompt = `Explain how '${skill.title}' is a crucial skill for a Technical Support Analyst, providing concise, actionable examples of its application in that role. Keep the response to 2-3 sentences.`;
-                const insights = await callGeminiAPI(prompt);
-                showModal(skill.title + " Insights", `<p>${insights.replace(/\n/g, '<br>')}</p>`);
-                insightButton.innerHTML = `Generate Insights ✨`;
-                insightButton.disabled = false;
             });
 
             skillsContainer.appendChild(card);
@@ -368,28 +299,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="text-lg text-slate-700">${job.company} <span class="text-slate-500 text-base">| ${job.location}</span></p>
                 <p class="text-sm italic text-slate-500 mb-3">${job.dates}</p>
                 <p class="text-sm text-slate-600 mb-4">Click for details...</p>
-                <button class="generate-transferable-skills-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-sm transition-colors duration-200">
-                    Transferable Skills Analysis ✨
-                </button>
             `;
 
-            const analysisButton = item.querySelector('.generate-transferable-skills-btn');
-            analysisButton.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                analysisButton.innerHTML = `<div class="loading-spinner mx-auto"></div>`;
-                analysisButton.disabled = true;
-                const jobDetailsText = job.details.map(d => d.replace(/<[^>]*>?/gm, '')).join(' ');
-                const prompt = `Analyze the following job responsibilities and extract 3-5 key transferable skills highly valuable for a Technical Support Analyst. For each skill, provide a concise example based on the responsibilities: "${job.title} at ${job.company}: ${jobDetailsText}". Format the output as a list.`;
-                const analysis = await callGeminiAPI(prompt);
-                showModal(`${job.title} - Transferable Skills`, `<p>${analysis.replace(/\n/g, '<br>')}</p>`);
-                analysisButton.innerHTML = `Transferable Skills Analysis ✨`;
-                analysisButton.disabled = false;
-            });
-
-            item.addEventListener('click', (event) => {
-                if(event.target.closest('.generate-transferable-skills-btn')) {
-                    return;
-                }
+            item.addEventListener('click', () => {
                 const detailsHtml = '<ul class="list-disc list-inside space-y-2">' + job.details.map(d => `<li class="pl-2">${d}</li>`).join('') + '</ul>';
                 showModal(job.title, detailsHtml);
             });
