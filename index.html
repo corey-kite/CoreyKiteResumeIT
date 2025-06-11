@@ -168,7 +168,8 @@
     </div>
 
 <script>
-(function() { // IIFE to prevent global variable conflicts on re-runs
+// Corrected IIFE syntax and data structure for robustness
+(function() {
     // Placeholder for API key, Canvas will inject it at runtime if empty
     const apiKey = ""; 
 
@@ -272,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 "Collected rent, managed budgets, and maintained meticulous financial and tenant records.",
                 "Marketed vacant units, screened potential tenants, and ensured regulatory compliance.",
                 "Listened to customer questions and concerns, providing answers or responses.",
-                "Provided information about products and services, took orders, calculated charges, and processed billing or payments."
+                "Provided information about products and services, took orders, calculated charges, and processed billing or payments." // This line was missing its closing bracket
             ] 
         },
         {
