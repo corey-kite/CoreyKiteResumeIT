@@ -69,7 +69,13 @@
 
         /* Modal styling */
         .modal-overlay {
+            opacity: 0;
+            pointer-events: none; /* Block clicks when hidden */
             transition: opacity 0.3s ease;
+        }
+        .modal-overlay.is-active { /* New class to activate modal */
+            opacity: 1;
+            pointer-events: auto; /* Allow clicks when active */
         }
         .modal-content {
             transition: transform 0.3s ease;
@@ -387,6 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalBody = document.getElementById('modal-body');
     const modalClose = document.getElementById('modal-close');
 
+    // Make modal immediately visible and then fade/transform
     function showModal(title, content) {
         if (!modal || !modalTitle || !modalBody) {
             console.error("Modal elements not found!");
@@ -394,24 +401,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         modalTitle.textContent = title;
         modalBody.innerHTML = content;
-        modal.classList.remove('hidden');
+        modal.classList.remove('hidden'); // Remove hidden immediately
         document.body.style.overflow = 'hidden';
         setTimeout(() => {
-            modal.classList.add('opacity-100');
+            modal.classList.add('is-active'); // Add active class to trigger opacity/transform
             modal.firstElementChild.classList.remove('scale-95');
             modal.firstElementChild.classList.add('scale-100');
-        }, 10);
+        }, 10); // Small delay to ensure hidden is removed before transition starts
     }
 
+    // Hide modal with transition
     function hideModal() {
         if (!modal) return;
-        modal.classList.remove('opacity-100');
+        modal.classList.remove('is-active'); // Remove active class to trigger opacity/transform out
         modal.firstElementChild.classList.remove('scale-100');
         modal.firstElementChild.classList.add('scale-95');
         setTimeout(() => {
-            modal.classList.add('hidden');
+            modal.classList.add('hidden'); // Add hidden after transition
             document.body.style.overflow = '';
-        }, 300);
+        }, 300); // Match transition duration
     }
 
     modalClose.addEventListener('click', hideModal);
