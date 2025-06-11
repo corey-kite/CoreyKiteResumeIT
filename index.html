@@ -466,3 +466,6 @@ Here's the key change I've made in the JavaScript for populating skills:
                 event.stopPropagation(); // Stop propagation to prevent the parent card's click listener from firing
                 // ... rest of the button's logic
             });
+```
+
+This ensures a clean separation of concerns for the click events. Now, clicking on the icon or title area of a skill card should open the modal with the skill details, and clicking specifically on the "Generate Insights" button will trigger the AI functi
