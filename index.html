@@ -301,6 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Populate Skills
     const skillsContainer = document.getElementById('skills-grid-container');
+    // Check if skillsContainer is null or undefined BEFORE attempting to use it
     if (skillsContainer) {
         skillsData.forEach(skill => {
             const card = document.createElement('div');
